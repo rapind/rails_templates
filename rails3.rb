@@ -64,7 +64,12 @@ run 'rails g nifty:config'
 run 'rm public/javascripts/rails.js'
 puts "replacing Prototype with jQuery"
 # "--ui" enables optional jQuery UI
-run 'rails generate jquery:install --ui'
+run 'rails g jquery:install --ui'
+
+#----------------------------------------------------------------------------
+# Set up Friendly Id
+#----------------------------------------------------------------------------
+run 'rails g friendly_id'
 
 #----------------------------------------------------------------------------
 # Set up Devise

@@ -43,7 +43,6 @@ gem 'carrierwave', '0.5.0'
 gem 'inherited_resources', '1.1.2'
 gem 'has_scope', '0.5.0'
 gem 'responders', '0.6.2'
-gem 'friendly_id', '3.1.7'
 gem 'will_paginate', '3.0.pre2'
 gem 'simple_form', '1.2.2'
 gem 'nifty-generators', :group => :development
