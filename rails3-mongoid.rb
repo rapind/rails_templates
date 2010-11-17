@@ -1,5 +1,5 @@
 # Application Generator Template
-# Usage: rails new app_name -d mysql -m rails3.rb
+# Usage: rails new app_name -m rails3-mongoid.rb
 
 #----------------------------------------------------------------------------
 # Set up git
@@ -17,6 +17,7 @@ git :commit => "-m 'Initial commit of unmodified new Rails app'"
 # Remove the usual cruft
 #----------------------------------------------------------------------------
 puts "removing unneeded files..."
+run 'rm config/database.yml'
 run 'rm public/index.html'
 run 'rm public/favicon.ico'
 run 'rm public/images/rails.png'
@@ -28,6 +29,8 @@ run 'touch README.md'
 #----------------------------------------------------------------------------
 puts "setting up Gemfile..."
 append_file 'Gemfile', "\n"
+gem 'mongoid', '2.0.0.beta.20'
+gem 'bson_ext', '1.1.2'
 gem 'rdiscount', '1.6.5'
 gem 'haml', '3.0.23'
 gem 'haml-rails', '0.3.4', :group => :development
@@ -49,6 +52,49 @@ gem 'capistrano'
 
 puts "installing gems (takes a few minutes!)..."
 run 'bundle install'
+
+#----------------------------------------------------------------------------
+# Set up Mongoid
+#----------------------------------------------------------------------------
+
+puts "creating 'config/mongoid.yml' Mongoid configuration file..."
+run 'rails generate mongoid:config'
+
+puts "modifying 'config/application.rb' file for Mongoid..."
+gsub_file 'config/application.rb', /require 'rails\/all'/ do
+<<-RUBY
+# If you are deploying to Heroku and MongoHQ,
+# you supply connection information here.
+require 'uri'
+if ENV['MONGOHQ_URL']
+  mongo_uri = URI.parse(ENV['MONGOHQ_URL'])
+  ENV['MONGOID_HOST'] = mongo_uri.host
+  ENV['MONGOID_PORT'] = mongo_uri.port.to_s
+  ENV['MONGOID_USERNAME'] = mongo_uri.user
+  ENV['MONGOID_PASSWORD'] = mongo_uri.password
+  ENV['MONGOID_DATABASE'] = mongo_uri.path.gsub('/', '')
+end
+
+require 'mongoid/railtie'
+require 'action_controller/railtie'
+require 'action_mailer/railtie'
+require 'active_resource/railtie'
+require 'rails/test_unit/railtie'
+RUBY
+end
+
+#----------------------------------------------------------------------------
+# Tweak config/application.rb for Mongoid
+#----------------------------------------------------------------------------
+gsub_file 'config/application.rb', /# Configure the default encoding used in templates for Ruby 1.9./ do
+<<-RUBY
+config.generators do |g|
+      g.orm             :mongoid
+    end
+
+    # Configure the default encoding used in templates for Ruby 1.9.
+RUBY
+end
 
 puts "prevent logging of passwords"
 gsub_file 'config/application.rb', /:password/, ':password, :password_confirmation'
@@ -106,25 +152,13 @@ puts "adding a 'name' attribute to the User model"
 gsub_file 'app/models/user.rb', 'attr_accessible ', 'attr_accessible :name, '
 gsub_file 'app/models/user.rb', /end/ do
 <<-RUBY
+  field :name
   validates_presence_of :name
   validates_uniqueness_of :name, :email, :case_sensitive => false
 end
 RUBY
 end
 
-#----------------------------------------------------------------------------
-# Modify Devise migration
-#----------------------------------------------------------------------------
-puts "modifying the default Devise user migration to add 'name'..."
-inject_into_file Dir.glob("db/migrate/*.rb")[0], :after => "t.trackable\n" do
-<<-RUBY
-      t.string :name, :limit => 64
-RUBY
-end
-
-puts "Create and migrate the database."
-run 'rake db:create'
-run 'rake db:migrate'
 
 #----------------------------------------------------------------------------
 # Modify Devise views
