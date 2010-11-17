@@ -28,6 +28,7 @@ run 'touch README.md'
 # Gems
 #----------------------------------------------------------------------------
 puts "setting up Gemfile..."
+gsub_file 'Gemfile', /gem \'sqlite3-ruby/, '# gem \'sqlite3-ruby'
 append_file 'Gemfile', "\n"
 gem 'mongoid', '2.0.0.beta.20'
 gem 'bson_ext', '1.1.2'
@@ -56,9 +57,6 @@ run 'bundle install'
 # Set up Mongoid
 #----------------------------------------------------------------------------
 
-puts "creating 'config/mongoid.yml' Mongoid configuration file..."
-run 'rails generate mongoid:config'
-
 puts "modifying 'config/application.rb' file for Mongoid..."
 gsub_file 'config/application.rb', /require 'rails\/all'/ do
 <<-RUBY
@@ -81,6 +79,9 @@ require 'active_resource/railtie'
 require 'rails/test_unit/railtie'
 RUBY
 end
+
+puts "creating 'config/mongoid.yml' Mongoid configuration file..."
+run 'rails generate mongoid:config'
 
 #----------------------------------------------------------------------------
 # Tweak config/application.rb for Mongoid
@@ -174,19 +175,19 @@ gsub_file 'app/views/devise/unlocks/new.html.haml', 'form_for', 'simple_form_for
 puts "modifying the default Devise user registration to add 'name'..."
 inject_into_file "app/views/devise/registrations/edit.html.haml", :after => "= devise_error_messages!\n" do
 <<-RUBY
-%p
-  = f.label :name
-  %br/
-  = f.text_field :name
+  %p
+    = f.label :name
+    %br/
+    = f.text_field :name
 RUBY
 end
 
 inject_into_file "app/views/devise/registrations/new.html.haml", :after => "= devise_error_messages!\n" do
 <<-RUBY
-%p
-  = f.label :name
-  %br/
-  = f.text_field :name
+  %p
+    = f.label :name
+    %br/
+    = f.text_field :name
 RUBY
 end
 
@@ -392,6 +393,7 @@ puts 'New user created: ' << user.name
 FILE
 end
 puts "Seed the database"
+run 'rake db:drop'
 run 'rake db:seed'
 
 #----------------------------------------------------------------------------

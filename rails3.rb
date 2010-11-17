@@ -146,19 +146,19 @@ gsub_file 'app/views/devise/unlocks/new.html.haml', 'form_for', 'simple_form_for
 puts "modifying the default Devise user registration to add 'name'..."
 inject_into_file "app/views/devise/registrations/edit.html.haml", :after => "= devise_error_messages!\n" do
 <<-RUBY
-%p
-  = f.label :name
-  %br/
-  = f.text_field :name
+  %p
+    = f.label :name
+    %br/
+    = f.text_field :name
 RUBY
 end
 
 inject_into_file "app/views/devise/registrations/new.html.haml", :after => "= devise_error_messages!\n" do
 <<-RUBY
-%p
-  = f.label :name
-  %br/
-  = f.text_field :name
+  %p
+    = f.label :name
+    %br/
+    = f.text_field :name
 RUBY
 end
 
