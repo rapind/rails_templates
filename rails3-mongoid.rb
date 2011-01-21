@@ -28,52 +28,58 @@ run 'touch README.md'
 # Gems
 #----------------------------------------------------------------------------
 puts "setting up Gemfile..."
+
 gsub_file 'Gemfile', /gem \'sqlite3-ruby/, '# gem \'sqlite3-ruby'
-append_file 'Gemfile', "\n"
 
-# mondodb document database
-gem 'mongoid', '2.0.0.rc.6'
-gem 'bson_ext', '1.1.2'
+open('Gemfile', 'a') do |f|
+  f.puts <<-RUBY
+  gem 'rails', '3.0.3'
 
-# for markdown content
-gem 'rdiscount', '1.6.5'
+  # mondodb document database
+  gem 'mongoid', '2.0.0.rc.6'
+  gem 'bson_ext', '1.2.0'
 
-# haml alternative to erb for template markup
-gem 'haml', '3.0.25'
-gem 'jquery-rails', '0.2.6'
+  # for markdown content
+  gem 'rdiscount', '1.6.5'
 
-# accounts and authentication
-gem 'devise', '1.1.5'
+  # haml alternative to erb for template markup
+  gem 'haml', '3.0.25'
+  gem 'jquery-rails', '0.2.6'
 
-# image uploads
-gem 'mini_magick', '3.2'
-gem 'carrierwave', '0.5.1'
+  # accounts and authentication
+  gem 'devise', '1.1.5'
 
-# thin controllers
-gem 'inherited_resources', '1.1.2'
-gem 'has_scope', '0.5.0'
-gem 'responders', '0.6.2'
+  # image uploads
+  gem 'mini_magick', '3.2'
+  gem 'carrierwave', '0.5.1'
 
-# pagination
-gem 'will_paginate', '3.0.pre2'
+  # thin controllers
+  gem 'inherited_resources', '1.1.2'
+  gem 'has_scope', '0.5.0'
+  gem 'responders', '0.6.2'
 
-# simple forms
-gem 'simple_form', '1.3.0'
+  # pagination
+  gem 'will_paginate', '3.0.pre2'
 
-group :development do
-  gem 'haml-rails', '0.3.4'
-  gem 'hpricot', '0.8.3'
-  gem 'ruby_parser', '2.0.5'
-  gem 'nifty-generators', '0.4.4'
-  gem RUBY_VERSION >= "1.9" ? 'ruby-debug19' : 'ruby-debug'
-  gem 'capistrano', '2.5.19'
-  gem 'mongrel', '1.2.0.pre2'
-end
+  # simple forms
+  gem 'simple_form', '1.3.0'
 
-group :development, :test do
-  # testing
-  gem 'shoulda', '2.11.3'
-  gem 'factory_girl_rails', '1.1.beta1'
+  group :development do
+    gem 'haml-rails', '0.3.4'
+    gem 'hpricot', '0.8.3'
+    gem 'ruby_parser', '2.0.5'
+    gem 'nifty-generators', '0.4.4'
+    gem RUBY_VERSION >= "1.9" ? 'ruby-debug19' : 'ruby-debug'
+    gem 'capistrano', '2.5.19'
+    gem 'mongrel', '1.2.0.pre2'
+  end
+
+  group :development, :test do
+    # testing
+    gem 'shoulda', '2.11.3'
+    gem 'factory_girl_rails', '1.1.beta1'
+  end
+  RUBY
 end
 
 puts "installing gems (takes a few minutes!)..."

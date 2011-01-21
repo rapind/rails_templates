@@ -28,7 +28,7 @@ run 'touch README.md'
 #----------------------------------------------------------------------------
 puts "setting up Gemfile..."
 append_file 'Gemfile', "\n"
-
+<<-RUBY
 # for markdown content
 gem 'rdiscount', '1.6.5'
 
@@ -72,6 +72,7 @@ group :development, :test do
   gem 'shoulda', '2.11.3'
   gem 'factory_girl_rails', '1.1.beta1'
 end
+RUBY
 
 puts "installing gems (takes a few minutes!)..."
 run 'bundle install'
